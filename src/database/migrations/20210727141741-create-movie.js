@@ -2,37 +2,37 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('movie', {
+    await queryInterface.createTable('movies', {
       id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true
+        primaryKey: true,
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       synopsis: {
         type: Sequelize.TEXT,
-        allowNull: false
+        allowNull: false,
       },
       spectators: {
         type: Sequelize.INTEGER,
-        defaultValue: 0
+        defaultValue: 0,
       },
       created_at: {
         type: Sequelize.DATE,
-        allowNull: false
+        allowNull: false,
       },
       updated_at: {
         type: Sequelize.DATE,
-        allowNull: false
-      }
+        allowNull: false,
+      },
     })
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('movie')
-  }
+    await queryInterface.dropTable('movies')
+  },
 }

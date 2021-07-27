@@ -29,3 +29,5 @@ routes.get('/movies/:id', MovieController.show)
 routes.post('/movies', MovieController.store)
 // Delete a movie
 routes.delete('/movies/:id', MovieController.delete)
+
+export default routes
