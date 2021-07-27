@@ -17,10 +17,6 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false
       },
-      release: {
-        type: Sequelize.DATEONLY,
-        defaultValue: Sequelize.NOW
-      },
       spectators: {
         type: Sequelize.INTEGER,
         defaultValue: 0
