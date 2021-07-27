@@ -1,5 +1,5 @@
 import * as yup from 'yup'
-
+// Set validation shape to Spectators
 const schema = yup.object().shape({
   name: yup.string().required(),
   sureName: yup.string().required(),

@@ -1,3 +1,4 @@
+// Database configurations
 module.exports = {
   dialect: 'mysql',
   host: 'localhost',
