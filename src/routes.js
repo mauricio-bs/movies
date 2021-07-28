@@ -14,8 +14,6 @@ routes.get('/viewers', ViewerController.index)
 routes.get('/viewers/:id', ViewerController.show)
 // Create a viewer
 routes.post('/viewers', ViewerController.store)
-// Set a movie as seen (Viewer id as URL param, and movie ID on body)
-routes.patch('/viewers/:id', ViewerController.update)
 // Delete a Viewer
 routes.delete('/viewers/:id', ViewerController.delete)
 
@@ -29,5 +27,7 @@ routes.get('/movies/:id', MovieController.show)
 routes.post('/movies', MovieController.store)
 // Delete a movie
 routes.delete('/movies/:id', MovieController.delete)
+// Set a movie as seen (Viewer id as URL param, and movie ID on body)
+routes.patch('/movie/watch/:id', ViewerController.update)
 
 export default routes
