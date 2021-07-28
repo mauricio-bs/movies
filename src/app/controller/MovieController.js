@@ -1,3 +1,4 @@
+import { v4 } from 'uuid'
 import Movie from '../model/Movie'
 import movieValidator from '../../validation/MovieValidation'
 
@@ -6,7 +7,8 @@ class MovieController {
     // Search and return all movies of database
     try {
       const movies = await Movie.findAll()
-      return res.status(200).json(movies)
+      if (movies) res.status(200).json(movies)
+      else res.status(500).json({ error: 'No data' })
     } catch (err) {
       return res.status(500).json({ error: 'Internal server error' })
     }
@@ -23,15 +25,24 @@ class MovieController {
     const mov = req.body
     if (!mov.spectators) mov.spectators = 0
 
+    // Checks if movie name exists
+    try {
+      const movie = await Movie.findOne({ where: { name: mov.name } })
+      if (movie) res.status(400).json({ error: 'Movie name already exists' })
+    } catch (err) {
+      return res.status(500).json({ error: 'Internal server error' })
+    }
+
     // Await create movie on database
     try {
       await Movie.create({
+        id: v4(),
         name: mov.name,
         synopsis: mov.synopsis,
-        spectators: mov.synopsis,
+        spectators: mov.spectators,
       })
     } catch (err) {
-      return res.status(500).json({ error: err.errors })
+      return res.status(500).json({ error: 'Internal server error' })
     }
 
     // Movie created successfully
@@ -40,15 +51,16 @@ class MovieController {
 
   async show(req, res) {
     // Check if the movie ID was spended
-    if (!req.params)
-      res
+    if (!req.params) {
+      return res
         .status(400)
         .json({ error: 'Make sure you sent all required informations' })
+    }
 
     // Search for movie on database an return it
     try {
       const movie = await Movie.findOne(req.params)
-      return res.status(200).json(movie)
+      if (movie) res.status(200).json(movie)
     } catch (err) {
       // Error
       return res.status(400).json(err.message)
@@ -56,22 +68,24 @@ class MovieController {
   }
 
   async delete(req, res) {
+    const { id } = req.params
     // Check if the ID param was spended
-    if (!req.params)
-      res
+    if (!id) {
+      return res
         .status(400)
         .json({ error: 'Make sure you sent all required informations' })
+    }
 
     // Check if the movie exist on datbase
     try {
-      await Movie.findByPk(req.params)
+      await Movie.findByPk(id)
     } catch (err) {
       return res.status(400).json({ error: 'Movie not exists' })
     }
 
     // Delete movie from database
     try {
-      await Movie.destroy({ where: { id: req.params } })
+      await Movie.destroy({ where: { id } })
     } catch (err) {
       return res.status(500).json({ error: 'Internal server error' })
     }

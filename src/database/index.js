@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize'
 import configDatabase from '../config/database'
-import Movie from '../app/model/Movie'
 import Viewer from '../app/model/Viewer'
+import Movie from '../app/model/Movie'
 
 // Models array
 const models = [Viewer, Movie]
@@ -11,7 +11,7 @@ class Database {
   }
 
   init() {
-    // Connect with every model, one at a time
+    // Connect every model, one at a time
     this.connection = new Sequelize(configDatabase)
     models.map((model) => model.init(this.connection))
   }

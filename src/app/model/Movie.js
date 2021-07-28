@@ -6,7 +6,6 @@ class Movie extends Model {
       {
         name: Sequelize.STRING,
         synopsis: Sequelize.TEXT,
-        release: Sequelize.DATEONLY,
         spectators: Sequelize.INTEGER,
       },
       {
