@@ -1,0 +1,33 @@
+----- API routes guide -----
+
+Case you don't be executing this system on local machine, 
+use the server address and port that is running this application instead localhost and port (http://server:port).
+
+Use the following routes with certain HTTP methods:
+
+GET:
+    - To get all movies: http://localhost:3000/movies
+    - To get all spectators: http://localhost:3000/viewers
+    - To find a specific movie: http://localhost:3000/movies/Movie_ID
+    - To find a specific spectator: http://localhost:3000/viewers/Spectator_ID
+
+POST:
+    - To register a movie: http://localhost:3000/movies
+    - To register a spectator: http://localhost:3000/viewers
+
+    Required data in the body (JSON format) for each route:
+        - New movie: "name", "synopsis", and number of spectators like "spectators"(optional)
+        - New spectator: "name", "sure_name", and email, remembering that email must to be unique;
+
+DELETE:
+    - Delete a movie: http://localhost:3000/movies/Movie_ID
+    - Delete a spectator: http://localhost:3000/viewer/Spectator_ID
+    OBS: These routes delete only 1 item
+
+PATCH: 
+    - Watch a movie: http://localhost:3000/movie/watch/Movie_ID && body JSON {"viewer_id": "ID_do_Espectador"}
+    
+    OBS: On this route, must be passed the movie ID in URL, 
+    and the spectator ID in body with JSON format, the propertie must have the name "viewer_id", and with the spectator ID as the value of this
+
+When use the route to watch a movie, one more film will be told to the spectator, and one more spectator will be told to the movie
