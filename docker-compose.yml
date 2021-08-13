@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+
+  nodejs:
+    container_name: app
+    build: '.'
+    volumes:
+      - .:/home/node/api
+      - /home/node/api/node_modules
+    depends_on:
+      - mysql
+    networks:
+      - app-connect
+    ports:
+      - '3000:3000'
+
+  mysql:
+    container_name: mysql
+    image: mysql:8
+    restart: unless-stopped
+    volumes:
+      - mysql-data:/data
+    environment: 
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+    networks:
+      - app-connect
+
+volumes:
+  mysql-data:
+
+networks:
+  app-connect:
+      driver: bridge
