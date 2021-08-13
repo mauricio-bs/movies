@@ -7,8 +7,17 @@ class ViewerController {
   async index(req, res) {
     // Find all spectators and return as JSON object
     try {
-      const specs = await Viewer.findAll()
-      if (specs) res.status(200).json(specs)
+      const specs = await Viewer.findAll({
+        include: [
+          {
+            model: Movie,
+            as: 'movies_watched',
+            attributes: ['id', 'name', 'spectators_count'],
+            through: { attributes: ['id', 'created_at'] },
+          },
+        ],
+      })
+      return res.status(200).json(specs)
     } /* Error */ catch (err) {
       return res.status(500).json({ error: 'Internal server error' })
     }
@@ -35,10 +44,10 @@ class ViewerController {
         name: viewer.name,
         sure_name: viewer.sure_name,
         email: viewer.email,
-        watched: viewer.watched,
+        times_watched: viewer.times_watched,
       })
     } catch (err) {
-      return res.status(500).json({ error: 'Internal server error' })
+      return res.status(500).json({ error: 'Failed to create viewer' })
     }
 
     return res.status(201).json({ success: 'Viewer created successfully!' })
@@ -55,44 +64,60 @@ class ViewerController {
 
     try {
       // Find viewer
-      const person = await Viewer.findByPk(id)
+      const person = await Viewer.findByPk(id, {
+        include: [
+          {
+            model: Movie,
+            as: 'movies_watched',
+            attributes: ['id', 'name', 'spectators_count'],
+            through: { attributes: ['id', 'created_at'] },
+          },
+        ],
+      })
       // Check if viewer exists and return a correct response
-      if (!person) res.status(400).json({ error: 'Viewer not exists' })
-      else res.status(200).json(person)
+      if (!person) throw new Error()
+
+      return res.status(200).json(person)
     } catch (err) {
-      return res.status(500).json({ error: 'Internal server error' })
+      return res.status(400).json({ error: 'Viewer not found' })
     }
   }
 
   async update(req, res) {
-    const { id } = req.params // movie ID
-    const { viewer_id } = req.body
+    const { movie_id, viewer_id } = req.params // movie ID
 
-    if (!viewer_id || !id) {
+    if (!viewer_id || !movie_id) {
       return res
         .status(400)
         .json({ error: 'Make sure you sent all required informations' })
     }
 
-    try {
-      const spec = await Viewer.findByPk(viewer_id)
-      if (!spec) res.status(400).json({ error: 'Viewer not exists' })
+    const spec = await Viewer.findByPk(viewer_id)
+    if (!spec) res.status(400).json({ error: 'Viewer not found' })
 
-      const movie = await Movie.findByPk(id)
-      if (!movie) res.status(400).json({ error: 'Movie not exists' })
-      // Change watched propertie
-      spec.watched += 1
-      movie.spectators += 1
+    const movie = await Movie.findByPk(movie_id)
+    if (!movie) res.status(400).json({ error: 'Movie not found' })
+    // Change watched propertie
+    spec.times_watched += 1
+    movie.spectators_count += 1
+
+    try {
+      await spec.addMovies_watched(movie)
 
       // Update spectator properties
       await Viewer.update(
-        { watched: spec.watched },
+        { times_watched: spec.times_watched },
         { where: { id: viewer_id } }
       )
       // Update movie properties
-      await Movie.update({ spectators: movie.spectators }, { where: { id } })
+      await Movie.update(
+        { spectators_count: movie.spectators_count },
+        { where: { id: movie_id } }
+      )
 
-      return res.status(200).json({ succes: `${viewer_id} was updated` })
+      return res
+        .status(200)
+        .json({ succes: `${spec.name + ' ' + spec.sure_name} was updated` })
     } catch (err) {
       return res.status(400).json({ error: err.message })
     }
@@ -103,17 +128,26 @@ class ViewerController {
 
     // Check if the viewer exists
     try {
-      const viewer = await Viewer.findByPk(id)
-      if (!viewer) res.status(400).json({ error: 'Viewer not exitst' })
+      const viewer = await Viewer.findByPk(id, {
+        include: [
+          {
+            model: Movie,
+            as: 'movies_watched',
+            attributes: ['id', 'name'],
+            through: { attributes: ['id', 'created_at'] },
+          },
+        ],
+      })
+      if (!viewer) throw new Error()
     } catch (err) {
-      return res.status(500).json({ error: 'Internal server error' })
+      return res.status(400).json({ error: 'Viewer not exitst' })
     }
 
     // Delete the viewer
     try {
       await Viewer.destroy({ where: { id } })
     } catch (err) {
-      return res.status(500).json({ error: 'Internal server error' })
+      return res.status(500).json({ error: 'Failed to delete viewer' })
     }
 
     return res.status(204).json()

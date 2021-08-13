@@ -18,7 +18,7 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      spectators: {
+      spectators_count: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },

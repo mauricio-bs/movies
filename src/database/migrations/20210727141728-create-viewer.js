@@ -21,7 +21,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      watched: {
+      times_watched: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },

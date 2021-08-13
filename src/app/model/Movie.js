@@ -6,12 +6,21 @@ class Movie extends Model {
       {
         name: Sequelize.STRING,
         synopsis: Sequelize.TEXT,
-        spectators: Sequelize.INTEGER,
+        spectators_count: Sequelize.INTEGER,
       },
       {
         sequelize,
       }
     )
+    return this
+  }
+
+  static associate(model) {
+    this.belongsToMany(model.Viewer, {
+      through: 'movie_viewer',
+      as: 'spectators',
+      foreignKey: 'movie_id',
+    })
   }
 }
 
