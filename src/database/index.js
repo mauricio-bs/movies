@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize'
+import 'dotenv/config'
 import configDatabase from '../config/database'
 import Viewer from '../app/model/Viewer'
 import Movie from '../app/model/Movie'
@@ -12,7 +13,10 @@ class Database {
 
   init() {
     // Connect every model, one at a time
-    this.connection = new Sequelize(configDatabase)
+    this.connection = new Sequelize(
+      process.env.CLEARDB_DATABASE_URL,
+      configDatabase
+    )
     models
       .map((model) => model.init(this.connection))
       .map(
